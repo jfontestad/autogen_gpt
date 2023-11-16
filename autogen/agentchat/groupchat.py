@@ -109,6 +109,8 @@ Then select the next role from {[agent.name for agent in agents]} to play. Only 
         # remove the last speaker from the list to avoid selecting the same speaker if allow_repeat_speaker is False
         agents = agents if self.allow_repeat_speaker else [agent for agent in agents if agent != last_speaker]
 
+        logger.warning(f"Selecting from the following agents: " + str([ a.name for a in agents ]))
+
         if self.speaker_selection_method == "manual":
             print("Please select the next speaker from the following list:")
             _n_agents = len(agents)
@@ -132,14 +134,20 @@ Then select the next role from {[agent.name for agent in agents]} to play. Only 
                 except ValueError:
                     print(f"Invalid input. Please enter a number between 1 and {_n_agents}.")
         elif self.speaker_selection_method == "round_robin":
+            logger.warning(f"Using round robin.")
             return self.next_agent(last_speaker, agents)
         elif self.speaker_selection_method == "random":
+            logger.warning(f"Using random.")
             return random.choice(agents)
         else:
             pass
+        
+        logger.warning(f"Using auto.")
 
         # auto speaker selection
-        selector.update_system_message(self.select_speaker_msg(agents))
+        sys_msg = self.select_speaker_msg(agents)
+        logger.warning(f"Updated system message:\n{sys_msg}")
+        selector.update_system_message(sys_msg)
         final, name = selector.generate_oai_reply(
             self.messages
             + [
