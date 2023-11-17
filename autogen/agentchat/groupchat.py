@@ -4,6 +4,7 @@ import random
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Union
 import re
+import json
 from .agent import Agent
 from .conversable_agent import ConversableAgent
 
@@ -217,6 +218,9 @@ Then select the next role from {[agent.name for agent in agents]} to play. Only 
             count = len(re.findall(regex, " " + message_content + " "))  # Pad the message to help with matching
             if count > 0:
                 mentions[agent.name] = count
+
+        print("Input was: " + message_content)
+        print("Mentions: " + json.dumps(mentions))
         return mentions
 
 
